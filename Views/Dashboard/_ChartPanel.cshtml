@@ -1,0 +1,18 @@
+@model dynamic
+
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <h3>@Model.Title</h3>
+            <p>@Model.Subtitle</p>
+        </div>
+    </div>
+    <div class="chart-box">
+        <canvas data-dashboard-chart
+                data-endpoint="@Model.Endpoint"
+                data-chart="@Model.Chart"
+                data-primary-label="@Model.Label"
+                data-secondary-label="Achats"
+                data-format="@Model.Format"></canvas>
+    </div>
+</div>

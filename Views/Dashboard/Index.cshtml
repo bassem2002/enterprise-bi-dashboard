@@ -1,0 +1,154 @@
+@model EnterpriseBIDashboard.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["PageHeading"] = "Enterprise BI Command Center";
+    ViewData["ActiveMenu"] = "Dashboard";
+}
+
+<section class="dashboard-page" data-dashboard-page="dashboard">
+    <div class="hero-band">
+        <div>
+            <p class="section-kicker">Business Intelligence Dashboard</p>
+            <h2>Vue consolidée ventes, achats, marge et performance commerciale</h2>
+            <p>Cube <strong>@Model.CubeName</strong> sur <strong>@Model.ServerName</strong>, alimente par le Data Warehouse <strong>@Model.DataWarehouseName</strong>.</p>
+        </div>
+        <div class="hero-metrics">
+            <span>SSAS Multidimensional</span>
+            <strong>EnterpriseCube</strong>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_FilterBar")
+
+    <div id="connectionAlert" class="alert alert-warning status-alert" role="alert"></div>
+
+    <section class="kpi-grid compact" aria-label="Indicateurs cles">
+        <article class="kpi-card accent-cyan">
+            <span class="kpi-icon">S</span>
+            <p class="kpi-label">Total ventes</p>
+            <p class="kpi-value" data-kpi="totalSales" data-format="currency">...</p>
+        </article>
+        <article class="kpi-card accent-blue">
+            <span class="kpi-icon">P</span>
+            <p class="kpi-label">Total achats</p>
+            <p class="kpi-value" data-kpi="totalPurchases" data-format="currency">...</p>
+        </article>
+        <article class="kpi-card">
+            <span class="kpi-icon">Q</span>
+            <p class="kpi-label">Quantite vendue</p>
+            <p class="kpi-value" data-kpi="totalQuantitySold" data-format="number">...</p>
+        </article>
+        <article class="kpi-card">
+            <span class="kpi-icon">O</span>
+            <p class="kpi-label">Quantite achetee</p>
+            <p class="kpi-value" data-kpi="totalQuantityPurchased" data-format="number">...</p>
+        </article>
+        <article class="kpi-card">
+            <span class="kpi-icon">T</span>
+            <p class="kpi-label">Taxes ventes</p>
+            <p class="kpi-value" data-kpi="totalSalesTax" data-format="currency">...</p>
+        </article>
+        <article class="kpi-card">
+            <span class="kpi-icon">D</span>
+            <p class="kpi-label">Remises ventes</p>
+            <p class="kpi-value" data-kpi="totalSalesDiscount" data-format="currency">...</p>
+        </article>
+    </section>
+
+    <section class="olap-kpi-section" aria-label="Indicateurs calcules OLAP">
+        <div class="olap-kpi-heading">
+            <div>
+                <p class="section-kicker">Membres calcules MDX</p>
+                <h3>Indicateurs avances du cube</h3>
+            </div>
+            <span class="olap-badge">Indicateurs calcules depuis le cube OLAP (MDX)</span>
+        </div>
+        <div class="kpi-grid calculated">
+            <article class="kpi-card calculated-card accent-green">
+                <span class="kpi-icon">MB</span>
+                <p class="kpi-label">Marge Brute</p>
+                <p class="kpi-value" data-calculated-kpi="margeBrute" data-format="currency">...</p>
+            </article>
+            <article class="kpi-card calculated-card accent-blue">
+                <span class="kpi-icon">NL</span>
+                <p class="kpi-label">Quantite Non Livree</p>
+                <p class="kpi-value" data-calculated-kpi="quantiteNonLivree" data-format="number">...</p>
+            </article>
+            <article class="kpi-card calculated-card accent-slate">
+                <span class="kpi-icon">AV</span>
+                <p class="kpi-label">Taux Achats / Ventes</p>
+                <p class="kpi-value" data-calculated-kpi="tauxAchatsVentes" data-format="percent">...</p>
+            </article>
+            <article class="kpi-card calculated-card accent-cyan">
+                <span class="kpi-icon">LV</span>
+                <p class="kpi-label">Taux Livraison</p>
+                <p class="kpi-value" data-calculated-kpi="tauxLivraison" data-format="percent">...</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="analytics-grid">
+        <div class="panel wide">
+            <div class="panel-header">
+                <div>
+                    <h3>Ventes vs achats par annee</h3>
+                    <p>Comparaison des flux financiers issus de Fact Sales et Fact Purchases.</p>
+                </div>
+            </div>
+            <div class="chart-box tall">
+                <canvas data-dashboard-chart data-endpoint="/api/dashboard/sales-vs-purchases" data-chart="mixed" data-primary-label="Ventes" data-secondary-label="Achats" data-format="currency"></canvas>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <h3>Ventes par pays client</h3>
+                    <p>Repartition geographique du chiffre d'affaires.</p>
+                </div>
+            </div>
+            <div class="chart-box">
+                <canvas data-dashboard-chart data-endpoint="/api/dashboard/sales-by-country" data-chart="doughnut" data-primary-label="Ventes" data-format="currency"></canvas>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <h3>Top produits</h3>
+                    <p>Produits leaders en chiffre d'affaires.</p>
+                </div>
+            </div>
+            <div class="chart-box">
+                <canvas data-dashboard-chart data-endpoint="/api/dashboard/top-products" data-chart="horizontalBar" data-primary-label="Ventes" data-format="currency"></canvas>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <h3>Achats par fournisseur</h3>
+                    <p>Montant d'achat par fournisseur deploye dans le cube.</p>
+                </div>
+            </div>
+            <div class="chart-box">
+                <canvas data-dashboard-chart data-endpoint="/api/dashboard/purchases-by-supplier" data-chart="bar" data-primary-label="Achats" data-format="currency"></canvas>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <h3>Ventes par mois</h3>
+                    <p>Saisonnalite commerciale.</p>
+                </div>
+            </div>
+            <div class="chart-box">
+                <canvas data-dashboard-chart data-endpoint="/api/dashboard/sales-by-month" data-chart="line" data-primary-label="Ventes" data-format="currency"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section class="table-grid">
+        <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/top-products" data-title="Top 10 produits" data-format="currency"></div>
+        <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/top-customers" data-title="Top 10 clients" data-format="currency"></div>
+        <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/top-suppliers" data-title="Top 10 fournisseurs" data-format="currency"></div>
+    </section>
+</section>

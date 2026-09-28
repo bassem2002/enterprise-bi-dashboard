@@ -1,0 +1,123 @@
+@model EnterpriseBIDashboard.ViewModels.AnalysisPageViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["PageHeading"] = Model.Title;
+    ViewData["ActiveMenu"] = Model.ActiveMenu;
+}
+
+<section class="dashboard-page" data-dashboard-page="@Model.PageKey">
+    <div class="hero-band slim">
+        <div>
+            <p class="section-kicker">EnterpriseCube Analytics</p>
+            <h2>@Model.Title</h2>
+            <p>@Model.Subtitle</p>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_FilterBar")
+
+    <div id="connectionAlert" class="alert alert-warning status-alert" role="alert"></div>
+
+    <section class="kpi-grid compact" aria-label="Indicateurs cles">
+        <article class="kpi-card accent-cyan">
+            <span class="kpi-icon">S</span>
+            <p class="kpi-label">Total ventes</p>
+            <p class="kpi-value" data-kpi="totalSales" data-format="currency">...</p>
+        </article>
+        <article class="kpi-card accent-blue">
+            <span class="kpi-icon">P</span>
+            <p class="kpi-label">Total achats</p>
+            <p class="kpi-value" data-kpi="totalPurchases" data-format="currency">...</p>
+        </article>
+        <article class="kpi-card accent-green">
+            <span class="kpi-icon">M</span>
+            <p class="kpi-label">Marge Brute</p>
+            <p class="kpi-value" data-calculated-kpi="margeBrute" data-format="currency">...</p>
+        </article>
+        <article class="kpi-card">
+            <span class="kpi-icon">%</span>
+            <p class="kpi-label">Achats / ventes</p>
+            <p class="kpi-value" data-calculated-kpi="tauxAchatsVentes" data-format="percent">...</p>
+        </article>
+    </section>
+
+    @if (Model.PageKey == "sales")
+    {
+        <section class="analytics-grid">
+            <partial name="_ChartPanel" model='new { Title = "Ventes par annee", Subtitle = "Tendance annuelle", Endpoint = "/api/dashboard/sales-by-year", Chart = "line", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par mois", Subtitle = "Saisonnalite", Endpoint = "/api/dashboard/sales-by-month", Chart = "bar", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par trimestre", Subtitle = "Lecture trimestrielle", Endpoint = "/api/dashboard/sales-by-quarter", Chart = "bar", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par client", Subtitle = "Contribution client", Endpoint = "/api/dashboard/sales-by-customer", Chart = "horizontalBar", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par pays", Subtitle = "Pays client", Endpoint = "/api/dashboard/sales-by-country", Chart = "doughnut", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par statut client", Subtitle = "Segmentation statut", Endpoint = "/api/dashboard/sales-by-status", Chart = "doughnut", Label = "Ventes", Format = "currency" }' />
+        </section>
+        <section class="table-grid">
+            <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/top-customers" data-title="Top 10 clients" data-format="currency"></div>
+            <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/sales-by-employee" data-title="Performance employes commerciaux" data-format="currency"></div>
+        </section>
+    }
+    else if (Model.PageKey == "purchases")
+    {
+        <section class="analytics-grid">
+            <partial name="_ChartPanel" model='new { Title = "Achats par fournisseur", Subtitle = "Fournisseurs principaux", Endpoint = "/api/dashboard/purchases-by-supplier", Chart = "horizontalBar", Label = "Achats", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Achats par annee", Subtitle = "Evolution annuelle", Endpoint = "/api/dashboard/purchases-by-year", Chart = "line", Label = "Achats", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Achats par mois", Subtitle = "Saisonnalite achats", Endpoint = "/api/dashboard/purchases-by-month", Chart = "bar", Label = "Achats", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Achats par produit", Subtitle = "Produits achetes", Endpoint = "/api/dashboard/purchases-by-product", Chart = "bar", Label = "Achats", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Quantites vendues vs achetees", Subtitle = "Comparaison volumes", Endpoint = "/api/dashboard/quantity-sales-vs-purchases", Chart = "mixed", Label = "Vendues", Format = "number" }' />
+        </section>
+        <section class="table-grid">
+            <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/top-suppliers" data-title="Top 10 fournisseurs" data-format="currency"></div>
+        </section>
+    }
+    else if (Model.PageKey == "products")
+    {
+        <section class="analytics-grid">
+            <partial name="_ChartPanel" model='new { Title = "Ventes par produit", Subtitle = "Chiffre d affaires par Product Code", Endpoint = "/api/dashboard/sales-by-product", Chart = "bar", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Produits les moins vendus", Subtitle = "Bottom 10 hors valeurs vides", Endpoint = "/api/dashboard/low-products", Chart = "horizontalBar", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par categorie", Subtitle = "Category ID", Endpoint = "/api/dashboard/sales-by-category", Chart = "doughnut", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par marque", Subtitle = "Brand ID", Endpoint = "/api/dashboard/sales-by-brand", Chart = "bar", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par couleur", Subtitle = "Analyse coloris", Endpoint = "/api/dashboard/sales-by-color", Chart = "doughnut", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par taille", Subtitle = "Analyse Size", Endpoint = "/api/dashboard/sales-by-size", Chart = "bar", Label = "Ventes", Format = "currency" }' />
+        </section>
+        <section class="table-grid">
+            <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/top-products" data-title="Top 10 produits" data-format="currency"></div>
+            <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/low-products" data-title="Produits les moins vendus" data-format="currency"></div>
+        </section>
+    }
+    else if (Model.PageKey == "customers")
+    {
+        <section class="analytics-grid">
+            <partial name="_ChartPanel" model='new { Title = "Ventes par client", Subtitle = "Company Name", Endpoint = "/api/dashboard/sales-by-customer", Chart = "horizontalBar", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par pays client", Subtitle = "Country", Endpoint = "/api/dashboard/sales-by-country", Chart = "doughnut", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par statut", Subtitle = "Customer Status", Endpoint = "/api/dashboard/sales-by-status", Chart = "bar", Label = "Ventes", Format = "currency" }' />
+        </section>
+        <section class="table-grid">
+            <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/top-customers" data-title="Top 10 clients" data-format="currency"></div>
+        </section>
+    }
+    else if (Model.PageKey == "suppliers")
+    {
+        <section class="analytics-grid">
+            <partial name="_ChartPanel" model='new { Title = "Achats par fournisseur", Subtitle = "Supplier Code", Endpoint = "/api/dashboard/purchases-by-supplier", Chart = "horizontalBar", Label = "Achats", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Achats par annee", Subtitle = "Evolution", Endpoint = "/api/dashboard/purchases-by-year", Chart = "line", Label = "Achats", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Achats par mois", Subtitle = "Saisonnalite", Endpoint = "/api/dashboard/purchases-by-month", Chart = "bar", Label = "Achats", Format = "currency" }' />
+        </section>
+        <section class="table-grid">
+            <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/top-suppliers" data-title="Top 10 fournisseurs" data-format="currency"></div>
+        </section>
+    }
+    else
+    {
+        <section class="analytics-grid">
+            <partial name="_ChartPanel" model='new { Title = "Ventes vs achats", Subtitle = "Vue executive annuelle", Endpoint = "/api/dashboard/sales-vs-purchases", Chart = "mixed", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Quantites vendues vs achetees", Subtitle = "Vue volumes", Endpoint = "/api/dashboard/quantity-sales-vs-purchases", Chart = "mixed", Label = "Vendues", Format = "number" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par pays", Subtitle = "Poids geographique", Endpoint = "/api/dashboard/sales-by-country", Chart = "doughnut", Label = "Ventes", Format = "currency" }' />
+            <partial name="_ChartPanel" model='new { Title = "Ventes par categorie", Subtitle = "Mix produits", Endpoint = "/api/dashboard/sales-by-category", Chart = "doughnut", Label = "Ventes", Format = "currency" }' />
+        </section>
+        <section class="table-grid">
+            <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/top-products" data-title="Top produits" data-format="currency"></div>
+            <div class="panel" data-dashboard-table data-endpoint="/api/dashboard/top-customers" data-title="Top clients" data-format="currency"></div>
+        </section>
+    }
+</section>
