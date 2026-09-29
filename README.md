@@ -1,5 +1,14 @@
 # Enterprise BI Dashboard
 
+<p align="center">
+  <img src="https://img.shields.io/badge/.NET%208-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 8" />
+  <img src="https://img.shields.io/badge/SSAS%20%7C%20MDX-Business%20Intelligence-0F766E?style=for-the-badge" alt="SSAS and MDX" />
+  <img src="https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" alt="Chart.js" />
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-14B8A6?style=for-the-badge" alt="MIT License" /></a>
+</p>
+
+<p align="center"><a href="#technology-stack">Stack</a> · <a href="#architecture">Architecture</a> · <a href="#running-the-application">Run locally</a></p>
+
 An ASP.NET Core MVC application connected directly to the `EnterpriseCube` SSAS Multidimensional cube running on `localhost`.
 
 This project delivers a professional business intelligence dashboard with KPIs, global filters, specialized analytics views, Chart.js visualizations, and JSON endpoints for every analysis.
