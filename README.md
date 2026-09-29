@@ -1,23 +1,23 @@
-# EnterpriseBIDashboard
+# Enterprise BI Dashboard
 
-Application ASP.NET Core MVC connectee directement au cube SSAS Multidimensional `EnterpriseCube` sur `localhost`.
+An ASP.NET Core MVC application connected directly to the `EnterpriseCube` SSAS Multidimensional cube running on `localhost`.
 
-Le projet presente un dashboard BI universitaire sous une forme professionnelle : KPI, filtres globaux, vues analytiques specialisees, graphiques Chart.js et endpoints JSON pour toutes les analyses.
+This project delivers a professional business intelligence dashboard with KPIs, global filters, specialized analytics views, Chart.js visualizations, and JSON endpoints for every analysis.
 
-## Auteur
+## Author
 
-Projet realise par **Bassem Wali** — [bassem2002](https://github.com/bassem2002).
+Developed by **Bassem Wali** — [bassem2002](https://github.com/bassem2002).
 
-## Stack
+## Technology Stack
 
-- ASP.NET Core MVC `net8.0`
+- ASP.NET Core MVC (`net8.0`)
 - C#
-- ADOMD.NET : `Microsoft.AnalysisServices.AdomdClient.NetCore.retail.amd64`
+- ADOMD.NET: `Microsoft.AnalysisServices.AdomdClient.NetCore.retail.amd64`
 - MDX
 - Chart.js
 - Bootstrap 5
 
-## Configuration BI
+## BI Configuration
 
 ```json
 "SqlServer": {
@@ -32,7 +32,7 @@ Projet realise par **Bassem Wali** — [bassem2002](https://github.com/bassem200
 }
 ```
 
-Si la base SSAS ne porte pas le meme nom que le cube, modifier `Catalog` dans `appsettings.json` et conserver `CubeName` pour le nom utilise dans `FROM [EnterpriseCube]`.
+If the SSAS database and cube use different names, update `Catalog` in `appsettings.json` and keep `CubeName` set to the name used in `FROM [EnterpriseCube]`.
 
 ## Architecture
 
@@ -64,11 +64,11 @@ wwwroot/
   js/dashboard.js
 ```
 
-La logique MDX est centralisee dans `Services/SsasService.cs`. Les vues ne contiennent pas de requetes MDX.
+All MDX logic is centralized in `Services/SsasService.cs`. The views contain no MDX queries.
 
-## Pages MVC
+## MVC Pages
 
-- `/` ou `/Dashboard/Index` : Dashboard general
+- `/` or `/Dashboard/Index`: main dashboard
 - `/Dashboard/SalesAnalytics`
 - `/Dashboard/PurchasesAnalytics`
 - `/Dashboard/ProductsAnalytics`
@@ -76,20 +76,20 @@ La logique MDX est centralisee dans `Services/SsasService.cs`. Les vues ne conti
 - `/Dashboard/SuppliersAnalytics`
 - `/Dashboard/ExecutiveSummary`
 
-## Filtres globaux
+## Global Filters
 
-La barre de filtres applique les dimensions suivantes aux endpoints compatibles :
+The filter bar applies the following dimensions to compatible endpoints:
 
-- Annee
-- Mois
-- Produit
-- Client
-- Fournisseur
-- Pays client
+- Year
+- Month
+- Product
+- Customer
+- Supplier
+- Customer country
 
-Les valeurs de filtres sont chargees depuis le cube via `MEMBER_UNIQUE_NAME`. Cela evite les erreurs lorsque le libelle affiche n'est pas la cle MDX du membre.
+Filter values are loaded from the cube using `MEMBER_UNIQUE_NAME`. This prevents errors when a displayed label differs from the member's MDX key.
 
-## Endpoints JSON
+## JSON Endpoints
 
 ```text
 GET /api/dashboard/connection-status
@@ -120,7 +120,7 @@ GET /api/dashboard/sales-by-color
 GET /api/dashboard/sales-by-size
 ```
 
-Chaque endpoint renvoie :
+Each endpoint returns:
 
 ```json
 {
@@ -130,37 +130,37 @@ Chaque endpoint renvoie :
 }
 ```
 
-En cas d'erreur SSAS ou MDX, l'API renvoie `503` avec un message propre. L'interface affiche ce message sans page blanche.
+If an SSAS or MDX error occurs, the API returns HTTP `503` with a clear message. The interface displays the error without rendering a blank page.
 
-## KPI
+## KPIs
 
-Les KPI de base sont :
+The core KPIs are:
 
-- total ventes : `[Measures].[Line Total - Fact Sales]`
-- total achats : `[Measures].[Line Total]`
-- quantite vendue : `[Measures].[Quantity]`
-- quantite achetee : `[Measures].[Ordered Quantity]`
-- taxes ventes : `[Measures].[Tax Amount]`
-- remises ventes : `[Measures].[Discount Amount]`
+- Total sales: `[Measures].[Line Total - Fact Sales]`
+- Total purchases: `[Measures].[Line Total]`
+- Quantity sold: `[Measures].[Quantity]`
+- Quantity purchased: `[Measures].[Ordered Quantity]`
+- Sales tax: `[Measures].[Tax Amount]`
+- Sales discounts: `[Measures].[Discount Amount]`
 
-La page Overview affiche separement 4 membres calcules directement depuis le cube OLAP, sans les recalculer avec des `WITH MEMBER` dans le dashboard :
+The Overview page separately displays four calculated members provided directly by the OLAP cube, without recalculating them with `WITH MEMBER` statements in the dashboard:
 
-- marge brute : `[Measures].[Marge Brute]`
-- quantite non livree : `[Measures].[Quantite Non Livree]`
-- taux achats / ventes : `[Measures].[Taux Achats Ventes]`
-- taux livraison : `[Measures].[Taux Livraison]`
+- Gross margin: `[Measures].[Marge Brute]`
+- Undelivered quantity: `[Measures].[Quantite Non Livree]`
+- Purchase-to-sales ratio: `[Measures].[Taux Achats Ventes]`
+- Delivery rate: `[Measures].[Taux Livraison]`
 
-Ces valeurs sont servies par :
+These values are served by:
 
 ```text
 GET /api/dashboard/calculated-kpis
 ```
 
-Si une mesure calculee est absente ou indisponible dans SSAS, l'endpoint reste stable et l'interface affiche `N/A` pour la carte concernee.
+If a calculated measure is missing or unavailable in SSAS, the endpoint remains stable and the interface displays `N/A` on the corresponding card.
 
-## Dimensions MDX reellement detectees
+## Detected MDX Dimensions
 
-Le cube deploye expose notamment :
+The deployed cube exposes the following dimensions, among others:
 
 ```text
 [Dim Date].[Year Number]
@@ -178,11 +178,11 @@ Le cube deploye expose notamment :
 [Dim Employee].[First Name]
 ```
 
-Important : dans le cube deploye, la dimension client s'appelle `[DimCustomer]`, pas `[Dim Customer]`. La hierarchie `[Dim Supplier].[Supplier Name]` n'est pas exposee ; les analyses fournisseurs utilisent donc `[Dim Supplier].[Supplier Code]`.
+Important: in the deployed cube, the customer dimension is named `[DimCustomer]`, not `[Dim Customer]`. The `[Dim Supplier].[Supplier Name]` hierarchy is not exposed, so supplier analytics use `[Dim Supplier].[Supplier Code]`.
 
-## Exemples MDX
+## MDX Examples
 
-### Ventes vs achats par annee
+### Sales vs. purchases by year
 
 ```mdx
 SELECT
@@ -199,7 +199,7 @@ SELECT
 FROM [EnterpriseCube]
 ```
 
-### Top produits
+### Top products
 
 ```mdx
 SELECT
@@ -213,9 +213,9 @@ SELECT
 FROM [EnterpriseCube]
 ```
 
-### Filtres
+### Filters
 
-Les filtres sont generes avec `StrToMember(..., CONSTRAINED)` a partir des `MEMBER_UNIQUE_NAME` fournis par SSAS :
+Filters are generated with `StrToMember(..., CONSTRAINED)` using the `MEMBER_UNIQUE_NAME` values returned by SSAS:
 
 ```mdx
 WHERE (
@@ -223,27 +223,27 @@ WHERE (
 )
 ```
 
-Quand un filtre concerne la meme hierarchie que l'axe affiche, le service applique le membre directement sur l'axe `ROWS` pour eviter l'erreur SSAS "hierarchie deja presente dans l'axe".
+When a filter targets the same hierarchy as the displayed axis, the service applies the member directly to the `ROWS` axis to avoid the SSAS "hierarchy already appears in the axis" error.
 
-## Lancement
+## Running the Application
 
 ```powershell
-cd C:\Users\zouar\OneDrive\Bureau\ProjetBI\EnterpriseBIDashboard
+cd EnterpriseBIDashboard
 dotnet restore
 dotnet run
 ```
 
-Ouvrir :
+Open:
 
 ```text
 http://localhost:5244
 ```
 
-Dans Visual Studio, ouvrir `EnterpriseBIDashboard.csproj`, choisir le profil `http` ou `https`, puis lancer avec `F5`.
+In Visual Studio, open `EnterpriseBIDashboard.csproj`, select the `http` or `https` profile, and press `F5`.
 
 ## Verification
 
-Commandes utiles :
+Useful commands:
 
 ```powershell
 dotnet build
@@ -251,14 +251,14 @@ Invoke-WebRequest http://localhost:5244/api/dashboard/kpis
 Invoke-WebRequest http://localhost:5244/api/dashboard/sales-vs-purchases
 ```
 
-Checklist :
+Checklist:
 
-1. SQL Server Analysis Services est demarre.
-2. `EnterpriseCube` est deploye et traite.
-3. L'utilisateur Windows courant a les droits de lecture SSAS.
-4. `/api/dashboard/connection-status` renvoie `isConnected: true`.
-5. La page `/` affiche les KPI, graphiques et tableaux.
+1. SQL Server Analysis Services is running.
+2. `EnterpriseCube` is deployed and processed.
+3. The current Windows user has SSAS read permissions.
+4. `/api/dashboard/connection-status` returns `isConnected: true`.
+5. The `/` page displays the KPIs, charts, and tables.
 
 ## Notes
 
-Aucune donnee fallback n'est utilisee comme donnee BI. En cas d'erreur, l'application affiche un etat d'erreur ou un etat vide, sans inventer de valeurs.
+No fallback values are presented as BI data. When an error occurs, the application displays an error or empty state instead of inventing values.
