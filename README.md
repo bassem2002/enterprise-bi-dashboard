@@ -13,6 +13,21 @@ An ASP.NET Core MVC application connected directly to the `EnterpriseCube` SSAS 
 
 This project delivers a professional business intelligence dashboard with KPIs, global filters, specialized analytics views, Chart.js visualizations, and JSON endpoints for every analysis.
 
+## Key Features
+
+- Executive overview combining sales, purchases, quantities, taxes, discounts, and calculated OLAP measures
+- Dedicated analytics views for products, customers, suppliers, employees, dates, categories, brands, colors, and sizes
+- Global Year, Month, Product, Customer, Supplier, and Country filters backed by SSAS member unique names
+- Reusable MDX query construction centralized in a dedicated service
+- Chart.js visualizations and responsive Bootstrap dashboard components
+- JSON API endpoints for every dashboard analysis
+- Live SSAS connection-status reporting
+- Stable error and empty states when the cube or a calculated measure is unavailable
+
+## Business Value
+
+The dashboard converts multidimensional warehouse data into decision-ready information. Executives can compare sales and purchasing activity, monitor margins and delivery indicators, identify high- and low-performing products, and analyze customer or supplier concentration. Operational users can refine the same measures through shared filters without writing MDX or interacting directly with SSAS tooling.
+
 ## Author
 
 Developed by **Bassem Wali** — [bassem2002](https://github.com/bassem2002).
@@ -74,6 +89,60 @@ wwwroot/
 ```
 
 All MDX logic is centralized in `Services/SsasService.cs`. The views contain no MDX queries.
+
+### Request and Data Flow
+
+```text
+┌──────────────────────────────────────┐
+│ Browser                              │
+│ Razor views · Filters · Chart.js     │
+└──────────────────┬───────────────────┘
+                   │ MVC pages / JSON requests
+                   ▼
+┌──────────────────────────────────────┐
+│ DashboardController                  │
+│ Routes · validation · API responses  │
+└──────────────────┬───────────────────┘
+                   │ ISsasService
+                   ▼
+┌──────────────────────────────────────┐
+│ SsasService                          │
+│ Filter tuples · MDX · result mapping │
+└──────────────────┬───────────────────┘
+                   │ ADOMD.NET
+                   ▼
+┌──────────────────────────────────────┐
+│ SQL Server Analysis Services         │
+│ EnterpriseCube · dimensions · KPIs   │
+└──────────────────────────────────────┘
+```
+
+### Detailed Project Structure
+
+```text
+EnterpriseBIDashboard/
+├── Controllers/
+│   ├── DashboardController.cs         # MVC pages and dashboard JSON endpoints
+│   └── HomeController.cs              # Default MVC routes and errors
+├── Models/                            # Filters, KPIs, chart points and API contracts
+├── Services/
+│   ├── ISsasService.cs                # SSAS service abstraction
+│   └── SsasService.cs                 # Connection, MDX generation and result mapping
+├── ViewModels/
+│   └── AnalysisPageViewModel.cs       # Shared analysis-page presentation model
+├── Views/
+│   ├── Dashboard/                     # Overview, analysis pages and partial views
+│   ├── Home/                          # Default MVC pages
+│   └── Shared/                        # Layout, validation and error views
+├── wwwroot/
+│   ├── css/site.css                   # Dashboard presentation
+│   ├── js/dashboard.js                # Filters, API calls and charts
+│   └── lib/                           # Bootstrap, jQuery and validation assets
+├── Properties/launchSettings.json     # Local launch profiles
+├── appsettings.json                   # SSAS and warehouse configuration
+├── Program.cs                         # Dependency injection and MVC pipeline
+└── EnterpriseBIDashboard.csproj
+```
 
 ## MVC Pages
 
@@ -233,6 +302,26 @@ WHERE (
 ```
 
 When a filter targets the same hierarchy as the displayed axis, the service applies the member directly to the `ROWS` axis to avoid the SSAS "hierarchy already appears in the axis" error.
+
+## Prerequisites and Current Limitations
+
+### Prerequisites
+
+- .NET 8 SDK
+- A reachable SQL Server Analysis Services Multidimensional instance
+- A deployed and processed `EnterpriseCube`, or equivalent cube with matching measures and dimensions
+- Windows credentials with permission to read the SSAS database when using `Integrated Security=SSPI`
+- Network access to the configured SSAS server
+
+### Current Limitations
+
+- The application depends on a specific cube schema and MDX member names; differently named dimensions or measures require configuration or query changes.
+- Local configuration currently references a development SQL Server machine and should be replaced for each environment.
+- Integrated Windows authentication is suitable for local or intranet use but requires a deliberate identity strategy for hosted deployment.
+- No automated test project currently validates MDX generation, result mapping, or controller behavior.
+- The repository does not include the SSAS cube definition, warehouse deployment scripts, or representative sample data.
+- No public hosted demonstration or dashboard screenshots are currently available.
+- Dashboard freshness depends on the external cube being deployed, processed, and reachable.
 
 ## Running the Application
 
